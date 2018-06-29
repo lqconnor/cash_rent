@@ -10,12 +10,11 @@ ptm <- proc.time()
 
 # Set up R environment --------------------------------------------------------------------
 #Load Packages
-pckgs <- c("tidyverse", "stargazer", "rnass", "rnassqs", "xlsx")
+pckgs <- c("tidyverse", "stargazer", "rnass", "rnassqs", "plm", "xlsx")
 lapply(pckgs, library, character.only = TRUE)
 
 # Load api key into R environment
-api <- readLines(".secret")
-Sys.setenv(NASSQS_TOKEN = api)
+Sys.setenv(NASSQS_TOKEN = readLines(".secret"))
 
 # Store state and county cash rent data keys ----------------------------------------------
 state_rent <- "58B27A06-F574-315B-A854-9BF568F17652#7878272B-A9F3-3BC2-960D-5F03B7DF4826"
@@ -65,7 +64,23 @@ rent_st1 <- group_by(rent_st1, State) %>%
   select(-all_there, -there, -ms, -ms2) %>%
   ungroup()
 
-ptm2 <- proc.time() - ptm
+# Split rent variables into columns ---------------------------------------------------------
+rent_st1$`Data Item` <- gsub("[[:blank:]]-.+", "", rent_st1$`Data Item`)
+rent_st1$`Data Item` <- gsub("RENT, CASH, ", "", rent_st1$`Data Item`)
+rent_st1$`Data Item` <- gsub("CROPLAND$", "CROPLAND, COMBINED", rent_st1$`Data Item`)
+rent_st1 <-rename(rent_st1, Rent = Value)
+rent_st1$Rent <- as.numeric(rent_st1$Rent)
+
+rent_st1 <- spread(rent_st1, key = `Data Item`, value = Rent) %>%
+  mutate(irr_prp = `CROPLAND, IRRIGATED`/`CROPLAND, COMBINED`,
+         nirr_prp = `CROPLAND, NON-IRRIGATED`/`CROPLAND, COMBINED`)
+
+
+plot_data = filter(rent_st1, State == "OHIO", Year > 2008)
+ggplot(data = plot_data, aes(x=Year, y=nirr_prp)) +
+  geom_line()
+
+ptm <- proc.time() - ptm
 
 #check <- as.data.frame(nassqs_field_values(field = 'short_desc')) %>%
   #filter(str_detect(short_desc, "RENT"))
