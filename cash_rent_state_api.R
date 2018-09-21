@@ -1,5 +1,6 @@
 # Farm Income Forecast Project.
 # The existence of smoothing in farm income forecasts
+# Can I commit this?
 
 # Pre - Amble -----------------------------------------------------------------------------
 rm(list = ls())
