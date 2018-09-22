@@ -10,7 +10,11 @@ ptm <- proc.time()
 
 # Set up R environment --------------------------------------------------------------------
 #Load Packages
-pckgs <- c("tidyverse", "stargazer", "rnass", "rnassqs", "plm", "xlsx")
+
+# Don't load the PLM package here. It has conflicting lead and lag commands that will
+# cause errors in your file
+
+pckgs <- c("tidyverse", "stargazer", "rnassqs")
 lapply(pckgs, library, character.only = TRUE)
 
 # Load api key into R environment
