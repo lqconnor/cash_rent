@@ -12,7 +12,7 @@ ptm <- proc.time()
 #Load Packages
 
 # Don't load the PLM package here. It has conflicting lead and lag commands that will
-# cause errors in your file
+# cause errors
 
 pckgs <- c("tidyverse", "stargazer", "rnassqs")
 lapply(pckgs, library, character.only = TRUE)
